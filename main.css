@@ -340,7 +340,7 @@
   @keyframes stay-centered {
     entry 0% {
       opacity: 0;
-      translate: -100%;
+      /* translate: -100%; */
     }
     entry 75%  {
       opacity: 0;

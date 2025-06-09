@@ -500,30 +500,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Tech stack functionality
-            const techStack = document.getElementById('techStack');
-            let hideTimeout;
-            let isVisible = false;
-
-            function toggleTechStack() {
-                isVisible = !isVisible;
-                
-                if (isVisible) {
-                    techStack.classList.add('visible');
-                    // Hide after 30 seconds
-                    hideTimeout = setTimeout(() => {
-                        techStack.classList.remove('visible');
-                        isVisible = false;
-                    }, 30000);
-                } else {
-                    techStack.classList.remove('visible');
-                    if (hideTimeout) {
-                        clearTimeout(hideTimeout);
-                    }
-                }
-            }
-
-
             // Carousel navigation
             const carousel = document.querySelector('.carousel');
             const items = document.querySelectorAll('.carousel-item');
@@ -624,13 +600,6 @@
                 } else if (event.key === 'ArrowLeft') {
                     event.preventDefault();
                     navigate('prev');
-                }
-            });
-            
-            // Click anywhere to close tech stack
-            document.addEventListener('click', function(event) {
-                if (isVisible && !techStack.contains(event.target)) {
-                    toggleTechStack();
                 }
             });
 
