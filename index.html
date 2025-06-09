@@ -8,22 +8,26 @@
     <style>
         /* Global overflow control */
         html, body {
-            overflow-x: hidden;
+            overflow: hidden;
             width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
+            position: fixed;
         }
 
         /* Page content styles */
         .page {
-            padding: 2rem;
+            padding: 1rem;
             box-sizing: border-box;
             overflow: hidden;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
             width: 100%;
             height: 100%;
+            position: relative;
         }
         
         .page > div {
@@ -126,17 +130,16 @@
         
         /* Content pages */
         .content-page {
-            height: 100%;
             width: 100%;
-            padding: 1.5rem;
+            height: 100%;
+            padding: 0.5rem;
             box-sizing: border-box;
-            overflow-y: auto;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             text-align: center;
-            margin: 0 auto;
         }
         
         .content-page h2 {
@@ -156,12 +159,14 @@
         
         /* Tech Stack Page Styles */
         .tech-stack-page {
-            padding: 2rem;
+            padding: 0.5rem;
+            width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            overflow: hidden;
         }
 
         .tech-stack-page h3 {
@@ -174,10 +179,10 @@
         .tech-stack-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
+            gap: 0.8rem;
+            width: 90%;
+            max-width: 300px;
+            margin: 0.5rem auto;
         }
 
         .tech-stack-item {
@@ -193,17 +198,83 @@
         }
 
         .tech-stack-item img {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .tech-stack-item span {
-            font-size: 1rem;
+            font-size: 0.8rem;
             color: #555;
             text-align: center;
             font-weight: 500;
+        }
+
+        .tech-stack-hint {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* Page Subtitles */
+        .page-subtitle {
+            margin: 0.5rem 0;
+            padding: 0.5rem 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid #f840a8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .page-subtitle h3 {
+            color: #f840a8;
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .content-overview {
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+        
+        .content-overview h2 {
+            color: #333;
+            margin: 0.5rem 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid #f840a8;
+            padding-bottom: 0.3rem;
+            display: inline-block;
+        }
+        
+        .centered-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+        }
+        
+        .centered-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+        }
+        
+        .centered-list li {
+            margin: 0.3rem 0;
+            font-size: 1rem;
+            color: #555;
         }
 
         /* Responsive adjustments */
@@ -291,6 +362,7 @@
                                     <p>Jorge Arcas Verdejo</p>
                                     <p>y</p>
                                     <p>Javier Sanz Valero</p>
+                                    
                                 </div>
                             </div>
                             <div class="page right-page">
@@ -306,8 +378,12 @@
                     <div class="carousel-item">
                         <div class="page-container">
                             <div class="page left-page">
-                                <div>
-                                    <!-- Left page content will be added later -->
+                                <div class="content-overview">
+                                    <h2>¿Qué es MathGeon?</h2>
+                                    <div class="page-subtitle">
+                                        <h3>Presentación del Proyecto</h3>
+                                        Contexto • Objetivos
+                                    </div>
                                 </div>
                             </div>
                             <div class="page right-page">
@@ -321,8 +397,12 @@
                     <div class="carousel-item">
                         <div class="page-container">
                             <div class="page left-page">
-                                <div>
-                                    <!-- Left page content will be added later -->
+                                <div class="content-overview">
+                                    <h2>Familiaridad y reactividad</h2>
+                                    <div class="page-subtitle">
+                                        <h3>Tecnologías Clave</h3>
+                                        Stack • Herramientas • Integración • Paquetes
+                                    </div>
                                 </div>
                             </div>
                             <div class="page right-page">
@@ -338,7 +418,7 @@
                         <div class="page-container">
                             <div class="page left-page">
                                 <div class="tech-stack-page">
-                                    <h3 id="techStackTitle">Tecnologías Frontend</h3>
+                                    <h2 id="techStackTitle">Tecnologías Frontend</h2>
                                     <div class="tech-stack-grid" id="techStackContent">
                                         <!-- Frontend Tech Stack (default) -->
                                         <div class="tech-stack-item">
@@ -374,10 +454,18 @@
                             <div class="page left-page">
                                 <div>
                                     <!-- Left page content will be added later -->
+                                    <div class="page-subtitle centered-list">
+                                        <h3>Logros y Aprendizajes</h3>
+                                        <ul>
+                                            <li>Resultados obtenidos</li>
+                                            <li>Lecciones aprendidas</li>
+                                            <li>Impacto del proyecto</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="page right-page">
-                                <div class="content-page">
+                                <div class="content-overview">
                                     <h2>Conclusiones</h2>
                                 </div>
                             </div>
