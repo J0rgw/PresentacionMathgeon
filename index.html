@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathgeon - Interactive Book</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* Global overflow control */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Page content styles */
+        .page {
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .page > div {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        /* Hide scrollbars but keep functionality */
+        .carousel {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            overflow: -moz-scrollbars-none;  /* Old Firefox */
+            counter-reset: none;  /* Reset any counter */
+        }
+        
+        .carousel::-webkit-scrollbar {
+            display: none;  /* Chrome, Safari and Opera */
+        }
+        
+        /* Hide page numbers */
+        .carousel::after,
+        .carousel::before,
+        .carousel-item::after,
+        .carousel-item::before,
+        .page::after,
+        .page::before,
+        .page-container::after,
+        .page-container::before {
+            display: none !important;
+            content: '' !important;
+        }
+        
+        /* Author and title pages */
+        .author-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        
+        .author-page h2 {
+            font-size: 2rem;
+            margin: 0 0 1.5rem 0;
+        }
+        
+        .author-page p {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+            line-height: 1.5;
+        }
+        
+        .title-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        
+        .title-page h1 {
+            font-size: 2.8rem;
+            margin: 0 0 1rem 0;
+            line-height: 1.1;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        
+        .title-page img {
+            max-width: 90%;
+            max-height: 40vh;
+            width: auto;
+            height: auto;
+            margin: 0.5rem auto;
+            object-fit: contain;
+        }
+        
+        .title-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        
+        /* Content pages */
+        .content-page {
+            height: 100%;
+            width: 100%;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .content-page h2 {
+            font-size: 1.8rem;
+            margin: 0 0 1.5rem 0;
+            color: #333;
+            border-bottom: 2px solid #f840a8;
+            padding-bottom: 0.5rem;
+        }
+        
+        .content-page p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0 0 1.2rem 0;
+            text-align: justify;
+        }
+        
+        /* Tech Stack Page Styles */
+        .tech-stack-page {
+            padding: 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tech-stack-page h3 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .tech-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .tech-stack-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-stack-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .tech-stack-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .tech-stack-item span {
+            font-size: 1rem;
+            color: #555;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .author-page h2 { font-size: 1.8rem; }
+            .author-page p { font-size: 1.1rem; }
+            .title-page h1 { font-size: 3rem; }
+            .content-page h2 { font-size: 1.6rem; }
+            .content-page p { font-size: 1rem; }
+        }
+    </style>
+    <style>
+        /* Tech Stack Styles */
+        .tech-stack {
+            position: fixed;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .tech-stack.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tech-icon {
+            width: 60px;
+            height: 60px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+            background: none;
+            padding: 0;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .tech-stack.visible .tech-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .tech-stack.visible .tech-icon:nth-child(1) { animation: bounce 0.6s ease 0.1s forwards; }
+        .tech-stack.visible .tech-icon:nth-child(2) { animation: bounce 0.6s ease 0.2s forwards; }
+        .tech-stack.visible .tech-icon:nth-child(3) { animation: bounce 0.6s ease 0.3s forwards; }
+        .tech-stack.visible .tech-icon:nth-child(4) { animation: bounce 0.6s ease 0.4s forwards; }
+
+        @keyframes bounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Add hover effect */
+        .tech-icon:hover {
+            transform: scale(1.1) !important;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            Math<span style="color: #f840a8; text-decoration: underline">Geon</span>
+        </h1>
+        <div class="sprite-wrapper">
+            <div class="book">
+                <!-- Carousel container -->
+                <div class="carousel" style="--slides: 6;">
+                    <!-- Bg sprite -->
+                    <div class="sprite"></div>
+                    
+                    <!-- Carousel items -->
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div class="author-page">
+                                    <h2>Por</h2>
+                                    <p>Jorge Arcas Verdejo</p>
+                                    <p>y</p>
+                                    <p>Javier Sanz Valero</p>
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="title-page">
+                                    <div class="title-content">
+                                        <h1>Mathgeon</h1>
+                                        <img src="https://assets.codepen.io/36869/brilliant.gif" alt="Animated Mathgeon Logo">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div>
+                                    <!-- Left page content will be added later -->
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="content-page">
+                                    <h2>Introducción y Objetivos</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div>
+                                    <!-- Left page content will be added later -->
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="content-page">
+                                    <h2>Herramientas</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- desarrollo -->
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div class="tech-stack-page">
+                                    <h3 id="techStackTitle">Tecnologías Frontend</h3>
+                                    <div class="tech-stack-grid" id="techStackContent">
+                                        <!-- Frontend Tech Stack (default) -->
+                                        <div class="tech-stack-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" title="React" />
+                                            <span>React</span>
+                                        </div>
+                                        <div class="tech-stack-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript" title="TypeScript" />
+                                            <span>TypeScript</span>
+                                        </div>
+                                        <div class="tech-stack-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3" title="CSS3" />
+                                            <span>CSS3</span>
+                                        </div>
+                                        <div class="tech-stack-item">
+                                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg" alt="Firebase" title="Firebase" />
+                                            <span>Firebase</span>
+                                        </div>
+                                    </div>
+                                    <p class="tech-stack-hint">Presiona 'f' para Frontend, 'b' para Backend</p>
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="content-page">
+                                    <h2>Desarrollo</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div>
+                                    <!-- Left page content will be added later -->
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="content-page">
+                                    <h2>Conclusiones</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="carousel-item">
+                        <div class="page-container">
+                            <div class="page left-page">
+                                <div>
+                                    <!-- Left page content will be added later -->
+                                </div>
+                            </div>
+                            <div class="page right-page">
+                                <div class="content-page">
+                                    <h2>Vías Futuras</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tech Stack Icons -->
+    <div class="tech-stack" id="techStack">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" class="tech-icon" alt="React" title="React" />
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" class="tech-icon" alt="TypeScript" title="TypeScript" />
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" class="tech-icon" alt="CSS3" title="CSS3" />
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg" class="tech-icon" alt="Firebase" title="Firebase" />
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tech stack functionality
+            const techStack = document.getElementById('techStack');
+            let hideTimeout;
+            let isVisible = false;
+
+            function toggleTechStack() {
+                isVisible = !isVisible;
+                
+                if (isVisible) {
+                    techStack.classList.add('visible');
+                    // Hide after 30 seconds
+                    hideTimeout = setTimeout(() => {
+                        techStack.classList.remove('visible');
+                        isVisible = false;
+                    }, 30000);
+                } else {
+                    techStack.classList.remove('visible');
+                    if (hideTimeout) {
+                        clearTimeout(hideTimeout);
+                    }
+                }
+            }
+
+
+            // Carousel navigation
+            const carousel = document.querySelector('.carousel');
+            const items = document.querySelectorAll('.carousel-item');
+            let currentIndex = 0;
+            const totalItems = items.length;
+
+            function scrollToItem(index) {
+                if (index >= 0 && index < totalItems) {
+                    currentIndex = index;
+                    const item = items[currentIndex];
+                    item.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }
+            }
+
+            function navigate(direction) {
+                if (direction === 'next') {
+                    scrollToItem(currentIndex + 1);
+                } else if (direction === 'prev') {
+                    scrollToItem(currentIndex - 1);
+                }
+            }
+
+
+            // Tech stack content
+            const frontendTech = `
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" title="React" />
+                    <span>React</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript" title="TypeScript" />
+                    <span>TypeScript</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3" title="CSS3" />
+                    <span>CSS3</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg" alt="Firebase" title="Firebase" />
+                    <span>Firebase</span>
+                </div>
+            `;
+
+            const backendTech = `
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rust/rust-original.svg" alt="Rust" title="Rust" />
+                    <span>Rust</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/wasm/wasm-original.svg" alt="WASM" title="WebAssembly" />
+                    <span>WASM</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" alt="GitHub" title="GitHub" />
+                    <span>GitHub</span>
+                </div>
+                <div class="tech-stack-item">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" alt="Docker" title="Docker" />
+                    <span>Docker</span>
+                </div>
+            `;
+
+            function showTechStack(type) {
+                const content = document.getElementById('techStackContent');
+                const title = document.getElementById('techStackTitle');
+                
+                if (type === 'frontend') {
+                    content.innerHTML = frontendTech;
+                    title.textContent = 'Tecnologías Frontend';
+                } else if (type === 'backend') {
+                    content.innerHTML = backendTech;
+                    title.textContent = 'Tecnologías Backend';
+                }
+            }
+
+            // Toggle on 'f' or 'b' key press
+            document.addEventListener('keydown', function(event) {
+                const key = event.key.toLowerCase();
+                
+                // Show frontend tech
+                if (key === 'f') {
+                    event.preventDefault();
+                    showTechStack('frontend');
+                } 
+                // Show backend tech
+                else if (key === 'b') {
+                    event.preventDefault();
+                    showTechStack('backend');
+                }
+                // Carousel navigation
+                else if (event.key === 'ArrowRight' || event.key === ' ') {
+                    event.preventDefault(); // Prevent spacebar from scrolling the page
+                    navigate('next');
+                } else if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    navigate('prev');
+                }
+            });
+            
+            // Click anywhere to close tech stack
+            document.addEventListener('click', function(event) {
+                if (isVisible && !techStack.contains(event.target)) {
+                    toggleTechStack();
+                }
+            });
+
+            // Initialize carousel position
+            scrollToItem(0);
+        });
+    </script>
+</body>
+</html>
